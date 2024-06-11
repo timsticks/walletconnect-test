@@ -1,27 +1,21 @@
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
     const connectWalletBtn = document.getElementById('connectWalletBtn');
     const walletAddressDisplay = document.getElementById('walletAddressDisplay');
 
-    let walletAddress = "";
-
     connectWalletBtn.addEventListener('click', async () => {
         try {
-            const hashconnect = new HashConnect();
-            const appData = {
-                name: "Wallet Connect Test",
-                description: "Testing wallet connection",
-                icon: "https://example.com/icon.png"
-            };
+            if (typeof window.hashpack === 'undefined') {
+                alert('Please install the HashPack wallet extension.');
+                return;
+            }
 
-            await hashconnect.init(appData, "testnet", false);
-            const state = await hashconnect.connect();
-            const pairings = hashconnect.getPairings();
-
-            if (pairings.length > 0) {
-                walletAddress = pairings[0].accountIds[0];
+            window.hashpack.on('pairing', async (pairingData) => {
+                const walletAddress = pairingData.accountIds[0];
                 connectWalletBtn.innerText = `Connected: ${walletAddress}`;
                 walletAddressDisplay.innerText = `Wallet Address: ${walletAddress}`;
-            }
+            });
+
+            window.hashpack.send('pair');
         } catch (error) {
             console.error("Wallet connection failed:", error);
         }
