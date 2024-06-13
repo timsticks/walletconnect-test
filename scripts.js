@@ -1,49 +1,61 @@
 document.addEventListener("DOMContentLoaded", async function () {
     const connectWalletBtn = document.getElementById('connectWalletBtn');
-    const walletStatus = document.getElementById('walletStatus');
+    const PROJECT_ID = "your_project_id_here"; // Replace with your WalletConnect project ID
+    const appMetadata = {
+        name: "HashPack Wallet Connect Test",
+        description: "Test connecting HashPack wallet",
+        icons: ["https://example.com/icon.png"],
+        url: "https://example.com"
+    };
 
-    let walletConnector;
+    let hashconnect = new HashConnect();
+    let pairingData = null;
 
-    connectWalletBtn.addEventListener('click', async () => {
-        if (!walletConnector) {
-            walletConnector = new WalletConnect.Client.default({
-                bridge: 'https://bridge.walletconnect.org'
-            });
+    // Initialize HashConnect
+    async function init() {
+        hashconnect = new HashConnect();
 
-            if (!walletConnector.connected) {
-                await walletConnector.createSession();
-            }
+        // Register events
+        setUpHashConnectEvents();
 
-            walletConnector.on('connect', (error, payload) => {
-                if (error) {
-                    throw error;
-                }
-                const { accounts } = payload.params[0];
-                const walletAddress = accounts[0];
-                walletStatus.innerText = `Connected: ${walletAddress}`;
-                connectWalletBtn.innerText = `Connected: ${walletAddress}`;
-            });
+        // Initialize and open pairing modal
+        let initData = await hashconnect.init(appMetadata);
+        await hashconnect.connect();
 
-            walletConnector.on('disconnect', (error, payload) => {
-                if (error) {
-                    throw error;
-                }
-                walletConnector = null;
-                walletStatus.innerText = '';
-                connectWalletBtn.innerText = 'Connect Wallet';
-            });
-
-            walletConnector.on('session_update', (error, payload) => {
-                if (error) {
-                    throw error;
-                }
-                const { accounts } = payload.params[0];
-                const walletAddress = accounts[0];
-                walletStatus.innerText = `Connected: ${walletAddress}`;
-                connectWalletBtn.innerText = `Connected: ${walletAddress}`;
-            });
+        if (initData.savedPairings.length > 0) {
+            pairingData = initData.savedPairings[0];
+            updateWalletDisplay();
         } else {
-            walletConnector.killSession();
+            hashconnect.openPairingModal();
         }
-    });
+    }
+
+    function setUpHashConnectEvents() {
+        hashconnect.pairingEvent.on((newPairing) => {
+            pairingData = newPairing;
+            updateWalletDisplay();
+        });
+
+        hashconnect.disconnectionEvent.on(() => {
+            pairingData = null;
+            updateWalletDisplay();
+        });
+
+        hashconnect.connectionStatusChangeEvent.on((connectionStatus) => {
+            console.log("Connection status:", connectionStatus);
+        });
+    }
+
+    function updateWalletDisplay() {
+        if (pairingData) {
+            connectWalletBtn.innerText = `Connected: ${pairingData.accountIds[0]}`;
+        } else {
+            connectWalletBtn.innerText = "Connect Wallet";
+        }
+    }
+
+    connectWalletBtn.addEventListener('click', init);
+
+    // Automatically try to connect on page load
+    init();
 });
