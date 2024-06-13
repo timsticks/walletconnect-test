@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async function () {
     const connectWalletBtn = document.getElementById('connectWalletBtn');
-    const PROJECT_ID = "your_project_id_here"; // Replace with your WalletConnect project ID
+    const PROJECT_ID = "d5459ebd6db9c584de814bae80e36e48"; // Replace with your WalletConnect project ID
     const appMetadata = {
         name: "HashPack Wallet Connect Test",
         description: "Test connecting HashPack wallet",
