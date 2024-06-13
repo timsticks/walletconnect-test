@@ -1,27 +1,23 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
     text-align: center;
-    background-color: #f4f4f4;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
     color: #333;
     margin: 0;
     padding: 0;
 }
 
-.container {
-    padding: 20px;
-    margin: 50px auto;
-    width: 300px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+nav {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-h1 {
-    margin-top: 20px;
-    color: #333;
-}
-
-button {
+#connectWalletBtn {
     background-color: #007bff;
     color: #fff;
     border: none;
@@ -31,6 +27,6 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #0056b3;
+#connectWalletBtn:hover {
+    background-color: #0069d9;
 }
