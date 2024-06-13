@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HashPack Wallet Connect Test</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@hashgraph/hashconnect@1.1.0/dist/hashconnect.js"></script>
-    <script src="scripts.js" defer></script>
+    <title>HashConnect Test</title>
 </head>
 <body>
-    <nav>
-        <h1>Hedera Testnet Wallet</h1>
-        <button id="connectWalletBtn">Connect Wallet</button>
-    </nav>
+    <script src="https://cdn.jsdelivr.net/npm/@hashgraph/hashconnect@0.5.0-beta.2/dist/umd/hashconnect.umd.js"></script>
+    <script>
+        if (typeof HashConnect !== 'undefined') {
+            console.log('HashConnect loaded successfully');
+        } else {
+            console.log('Failed to load HashConnect');
+        }
+    </script>
 </body>
 </html>
