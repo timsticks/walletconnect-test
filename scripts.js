@@ -1,23 +1,49 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     const connectWalletBtn = document.getElementById('connectWalletBtn');
-    const walletAddressDisplay = document.getElementById('walletAddressDisplay');
+    const walletStatus = document.getElementById('walletStatus');
+
+    let walletConnector;
 
     connectWalletBtn.addEventListener('click', async () => {
-        try {
-            if (typeof window.hashpack === 'undefined') {
-                alert('Please install the HashPack wallet extension.');
-                return;
-            }
-
-            window.hashpack.on('pairing', async (pairingData) => {
-                const walletAddress = pairingData.accountIds[0];
-                connectWalletBtn.innerText = `Connected: ${walletAddress}`;
-                walletAddressDisplay.innerText = `Wallet Address: ${walletAddress}`;
+        if (!walletConnector) {
+            walletConnector = new WalletConnect.Client.default({
+                bridge: 'https://bridge.walletconnect.org'
             });
 
-            window.hashpack.send('pair');
-        } catch (error) {
-            console.error("Wallet connection failed:", error);
+            if (!walletConnector.connected) {
+                await walletConnector.createSession();
+            }
+
+            walletConnector.on('connect', (error, payload) => {
+                if (error) {
+                    throw error;
+                }
+                const { accounts } = payload.params[0];
+                const walletAddress = accounts[0];
+                walletStatus.innerText = `Connected: ${walletAddress}`;
+                connectWalletBtn.innerText = `Connected: ${walletAddress}`;
+            });
+
+            walletConnector.on('disconnect', (error, payload) => {
+                if (error) {
+                    throw error;
+                }
+                walletConnector = null;
+                walletStatus.innerText = '';
+                connectWalletBtn.innerText = 'Connect Wallet';
+            });
+
+            walletConnector.on('session_update', (error, payload) => {
+                if (error) {
+                    throw error;
+                }
+                const { accounts } = payload.params[0];
+                const walletAddress = accounts[0];
+                walletStatus.innerText = `Connected: ${walletAddress}`;
+                connectWalletBtn.innerText = `Connected: ${walletAddress}`;
+            });
+        } else {
+            walletConnector.killSession();
         }
     });
 });
