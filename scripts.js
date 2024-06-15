@@ -1,61 +1,38 @@
 document.addEventListener("DOMContentLoaded", async function () {
     const connectWalletBtn = document.getElementById('connectWalletBtn');
-    const PROJECT_ID = "d5459ebd6db9c584de814bae80e36e48"; // Replace with your WalletConnect project ID
-    const appMetadata = {
-        name: "HashPack Wallet Connect Test",
-        description: "Test connecting HashPack wallet",
-        icons: ["https://example.com/icon.png"],
-        url: "https://example.com"
+    const connectionStatus = document.getElementById('connectionStatus');
+    const pairingDetails = document.getElementById('pairingDetails');
+
+    let hashconnect = new HashConnect(true);
+    let appMetadata = {
+        name: "Launchpad",
+        description: "A simple Hedera wallet connector",
+        icon: "https://example.com/icon.png"
     };
 
-    let hashconnect = new HashConnect();
-    let pairingData = null;
+    let initData = await hashconnect.init(appMetadata, "testnet", false);
+    let savedPairings = hashconnect.loadPairingData();
 
-    // Initialize HashConnect
-    async function init() {
-        hashconnect = new HashConnect();
+    hashconnect.pairingEvent.on(pairingData => {
+        connectionStatus.innerText = "Connected";
+        pairingDetails.innerHTML = `
+            <p>Account ID: ${pairingData.accountIds[0]}</p>
+            <p>Network: ${pairingData.network}</p>
+            <p>Metadata: ${JSON.stringify(pairingData.metadata)}</p>
+        `;
+    });
 
-        // Register events
-        setUpHashConnectEvents();
+    hashconnect.connectionStatusChangeEvent.on(newStatus => {
+        connectionStatus.innerText = `Connection status: ${newStatus}`;
+    });
 
-        // Initialize and open pairing modal
-        let initData = await hashconnect.init(appMetadata);
-        await hashconnect.connect();
+    hashconnect.disconnectionEvent.on(() => {
+        connectionStatus.innerText = "Disconnected";
+        pairingDetails.innerHTML = "";
+    });
 
-        if (initData.savedPairings.length > 0) {
-            pairingData = initData.savedPairings[0];
-            updateWalletDisplay();
-        } else {
-            hashconnect.openPairingModal();
-        }
-    }
-
-    function setUpHashConnectEvents() {
-        hashconnect.pairingEvent.on((newPairing) => {
-            pairingData = newPairing;
-            updateWalletDisplay();
-        });
-
-        hashconnect.disconnectionEvent.on(() => {
-            pairingData = null;
-            updateWalletDisplay();
-        });
-
-        hashconnect.connectionStatusChangeEvent.on((connectionStatus) => {
-            console.log("Connection status:", connectionStatus);
-        });
-    }
-
-    function updateWalletDisplay() {
-        if (pairingData) {
-            connectWalletBtn.innerText = `Connected: ${pairingData.accountIds[0]}`;
-        } else {
-            connectWalletBtn.innerText = "Connect Wallet";
-        }
-    }
-
-    connectWalletBtn.addEventListener('click', init);
-
-    // Automatically try to connect on page load
-    init();
+    connectWalletBtn.addEventListener('click', () => {
+        hashconnect.connectToLocalWallet();
+        hashconnect.openPairing();
+    });
 });
