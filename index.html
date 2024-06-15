@@ -3,51 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HashConnect Test</title>
-    <script src="https://cdn.jsdelivr.net/npm/@hashgraph/hashconnect@0.5.0/dist/umd/hashconnect.umd.min.js"></script>
+    <title>Connect Wallet</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="hashconnect.js"></script>
+    <script src="wallet-connect.js" defer></script>
 </head>
 <body>
-    <button id="connectWalletBtn">Connect Wallet</button>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (typeof HashConnect !== 'undefined') {
-                console.log('HashConnect loaded successfully');
-
-                const connectWalletBtn = document.getElementById('connectWalletBtn');
-                const appMetadata = {
-                    name: "HashPack Wallet Connect Test",
-                    description: "Test connecting HashPack wallet",
-                    icon: "https://example.com/icon.png",
-                    url: "https://example.com"
-                };
-
-                let hashconnect = new HashConnect();
-                let savedData = null;
-
-                async function init() {
-                    const network = "testnet";
-
-                    // Initialize HashConnect with app metadata
-                    await hashconnect.init(appMetadata, network);
-
-                    // Save data to the local storage
-                    savedData = await hashconnect.connect();
-
-                    // Check for saved pairings
-                    if (savedData.pairingData.length > 0) {
-                        const pairingData = savedData.pairingData[0];
-                        connectWalletBtn.innerText = `Connected: ${pairingData.accountIds[0]}`;
-                    } else {
-                        // Open the pairing modal
-                        hashconnect.openPairingModal();
-                    }
-                }
-
-                connectWalletBtn.addEventListener('click', init);
-            } else {
-                console.log('Failed to load HashConnect');
-            }
-        });
-    </script>
+    <nav>
+        <a href="index.html">Home</a>
+        <button id="connectWalletBtn">Connect Wallet</button>
+        <div id="connectionStatus"></div>
+        <div id="pairingDetails"></div>
+    </nav>
 </body>
 </html>
