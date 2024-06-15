@@ -12,9 +12,22 @@ nav {
     color: #fff;
     padding: 10px;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #28a745;
+    transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+    background-color: #218838;
 }
 
 #connectWalletBtn {
@@ -29,4 +42,9 @@ nav {
 
 #connectWalletBtn:hover {
     background-color: #0069d9;
+}
+
+#connectionStatus, #pairingDetails {
+    margin-top: 20px;
+    color: #fff;
 }
